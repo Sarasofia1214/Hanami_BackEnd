@@ -7,7 +7,7 @@ import {
   removeOrder,
 } from "../Controllers/orderController.js";
 
-import { authRequired, adminRequired } from "../Middleware/authMiddleware.js";
+import { authRequired, adminRequired } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 router.post("/", authRequired, createNewOrder);
