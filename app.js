@@ -3,12 +3,14 @@ import dishRoutes from "./Routes/dishRoutes.js";
 import categoryRoutes from "./Routes/categoryRoutes.js";
 import ingredientRoutes from "./Routes/ingredientRoutes.js";
 import userRoutes from "./Routes/userRoutes.js";
-import orderRoutes from "./Routes/orderRoutes.js";
+import reservationRoutes from "./Routes/reservationRoutes.js";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import cors from "cors";
+import authRoutes from "./Routes/authRoutes.js";
+
 
 // Fix para rutas en ESModules
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +25,8 @@ app.use("/dishes", dishRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/ingredients", ingredientRoutes);
 app.use("/users", userRoutes);
-app.use("/orders", orderRoutes);
+app.use("/reservations", reservationRoutes);
+app.use("/auth", authRoutes);
 app.use(cors());
 // Cargar el swagger generado automáticamente
 app.use(
@@ -35,8 +38,6 @@ app.use(
     )
   )
 )
-
-
 
 export default app;
 
