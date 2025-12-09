@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import swaggerUi from "swagger-ui-express";
-
 import dishRoutes from "./Routes/dishRoutes.js";
 import categoryRoutes from "./Routes/categoryRoutes.js";
 import ingredientRoutes from "./Routes/ingredientRoutes.js";

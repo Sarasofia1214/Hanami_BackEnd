@@ -1,80 +1,61 @@
-// Controllers/userController.js
-
-import {
-  validateUser,
-  getAllUsers,
-  getUserById,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  deleteUser,
+import { 
+  validateUser, 
+  getAllUsers, 
+  getUserById, 
+  updateUser, 
+  deleteUser 
 } from "../Models/userModel.js";
 
-// GET ALL
-export const getUsers = async (req, res) => {
+// Listar todos los usuarios
+export const listUsers = async (req, res) => {
   try {
     const users = await getAllUsers();
-    res.json(users);
+    return res.json(users);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching users" });
+    console.error("Error al listar usuarios:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
-// GET BY ID
-export const getSingleUser = async (req, res) => {
+// Obtener usuario por ID
+export const getUser = async (req, res) => {
   try {
-    const user = await getUserById(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    res.json(user);
+    const { id } = req.params;
+    const user = await getUserById(id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    return res.json(user);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching user" });
+    console.error("Error al obtener usuario:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
-// CREATE
-export const createNewUser = async (req, res) => {
+// Actualizar usuario
+export const editUser = async (req, res) => {
   try {
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
-
-    const existing = await getUserByEmail(req.body.email);
-    if (existing) {
-      return res.status(400).json({ error: "Email already registered" });
-    }
-
-    const newUser = await createUser(req.body);
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ error: "Error creating user" });
-  }
-};
-
-// UPDATE
-export const updateExistingUser = async (req, res) => {
-  try {
-    const existing = await getUserById(req.params.id);
-    if (!existing) return res.status(404).json({ error: "User not found" });
+    const { id } = req.params;
 
     const { error } = validateUser(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
-    const updated = await updateUser(req.params.id, req.body);
-    res.json(updated);
+    const updated = await updateUser(id, req.body);
+    if (!updated) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    return res.json({ message: "Usuario actualizado correctamente" });
   } catch (error) {
-    res.status(500).json({ error: "Error updating user" });
+    console.error("Error al actualizar usuario:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
-// DELETE
-export const deleteUserById = async (req, res) => {
+// Eliminar usuario
+export const removeUser = async (req, res) => {
   try {
-    const existing = await getUserById(req.params.id);
-    if (!existing) return res.status(404).json({ error: "User not found" });
+    const { id } = req.params;
+    const deleted = await deleteUser(id);
+    if (!deleted) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    await deleteUser(req.params.id);
-    res.json({ message: "User deleted successfully" });
+    return res.json({ message: "Usuario eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({ error: "Error deleting user" });
+    console.error("Error al eliminar usuario:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
