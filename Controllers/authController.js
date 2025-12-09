@@ -1,33 +1,40 @@
-import { getUserByEmail } from "../Models/userModel.js";
-import bcrypt from "bcrypt";
+import { getUserByEmail, comparePassword } from "../Models/userModel.js";
 import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("JWT_SECRET no configurado en variables de entorno");
+  process.exit(1);
+}
 
 export const login = async (req, res) => {
   try {
+    // Validación de input
     const { email, password } = req.body;
-
-    if (!email || !password)
+    if (!email || !password) {
       return res.status(400).json({ message: "Email y contraseña requeridos" });
+    }
 
+    // Buscar usuario
     const user = await getUserByEmail(email);
-
-    if (!user)
+    if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch)
+    // Comparar contraseña
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
 
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
+    // Generar token JWT
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: "8h" });
 
+    // Respuesta
     return res.json({
       message: "Login exitoso",
       token,
-      role: user.role,
       user: {
         id: user.id,
         name: user.name,
