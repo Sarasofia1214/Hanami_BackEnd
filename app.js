@@ -8,7 +8,7 @@ import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
-
+import cors from "cors";
 
 // Fix para rutas en ESModules
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +24,7 @@ app.use("/categories", categoryRoutes);
 app.use("/ingredients", ingredientRoutes);
 app.use("/users", userRoutes);
 app.use("/orders", orderRoutes);
+app.use(cors());
 // Cargar el swagger generado automáticamente
 app.use(
   "/api-docs",

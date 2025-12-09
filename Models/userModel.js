@@ -4,26 +4,21 @@ import pool from "../Config/db.js";
 import Joi from "joi";
 import bcrypt from "bcrypt";
 
-// =========================
-// VALIDACIÓN JOI
-// =========================
 const userSchema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).optional(), // Solo en create o update de password
-  role: Joi.string().valid("admin", "staff").default("staff"),
+  password: Joi.string().min(6).optional(), 
+  role: Joi.string().valid("admin", "customer").default("customer"),
 });
 
-export const validateUser = (data) => {
-  return userSchema.validate(data);
-};
-
-// =========================
-// SQL QUERIES
-// =========================
+// Validación
+export const validateUser = (data) => userSchema.validate(data);
 
 export const getAllUsers = async () => {
-  const [rows] = await pool.query("SELECT id, name, email, role, created_at FROM users");
+  const [rows] = await pool.query(`
+    SELECT id, name, email, role, created_at 
+    FROM users
+  `);
   return rows;
 };
 
@@ -47,7 +42,8 @@ export const createUser = async ({ name, email, password, role }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const [result] = await pool.query(
-    `INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)`,
+    `INSERT INTO users (name, email, password, role)
+     VALUES (?, ?, ?, ?)`,
     [name, email, hashedPassword, role]
   );
 
@@ -77,7 +73,7 @@ export const updateUser = async (id, data) => {
   }
   if (data.password) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    fields.push("password_hash = ?");
+    fields.push("password = ?");
     values.push(hashedPassword);
   }
 
@@ -85,7 +81,10 @@ export const updateUser = async (id, data) => {
 
   values.push(id);
 
-  await pool.query(`UPDATE users SET ${fields.join(", ")} WHERE id = ?`, values);
+  await pool.query(
+    `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
+    values
+  );
 
   return await getUserById(id);
 };
