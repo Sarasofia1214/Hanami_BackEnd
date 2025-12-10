@@ -16,10 +16,6 @@ export const validateIngredient = (data) => {
   return ingredientSchema.validate(data);
 };
 
-// ==============================
-// Métodos SQL
-// ==============================
-
 // Obtener todos
 export const getAllIngredients = async () => {
   const [rows] = await pool.query("SELECT * FROM ingredients");
@@ -32,10 +28,12 @@ export const getIngredientById = async (id) => {
   return rows[0];
 };
 
-// Obtener ingredientes por plato
 export const getIngredientsByDishId = async (dish_id) => {
   const [rows] = await pool.query(
-    "SELECT * FROM ingredients WHERE dish_id = ?",
+    `SELECT i.id, i.name 
+     FROM ingredients i
+     INNER JOIN dish_ingredients di ON di.ingredient_id = i.id
+     WHERE di.dish_id = ?`,
     [dish_id]
   );
   return rows;
