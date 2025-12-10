@@ -30,7 +30,7 @@ export const getIngredientById = async (id) => {
 
 export const getIngredientsByDishId = async (dish_id) => {
   const [rows] = await pool.query(
-    `SELECT i.id, i.name 
+    `SELECT DISTINCT i.name
      FROM ingredients i
      INNER JOIN dish_ingredients di ON di.ingredient_id = i.id
      WHERE di.dish_id = ?`,
@@ -38,6 +38,7 @@ export const getIngredientsByDishId = async (dish_id) => {
   );
   return rows;
 };
+
 
 // Crear
 export const createIngredient = async (data) => {
