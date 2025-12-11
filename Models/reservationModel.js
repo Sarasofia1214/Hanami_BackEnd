@@ -1,7 +1,6 @@
 import pool from "../Config/db.js";
 import Joi from "joi";
 
-// Validación con Joi segun el esquema definido
 const reservationSchema = Joi.object({
   table_id: Joi.number().integer().required(),
   user_id: Joi.number().integer().allow(null),
@@ -25,7 +24,7 @@ export const getAllReservations = async () => {
   return rows;
 };
 
-// Obtener una reserva por ID
+// Obtener una reserva por id
 export const getReservationById = async (id) => {
   const [rows] = await pool.query(
     `SELECT r.*, t.name AS table_name, u.name AS user_name
@@ -38,15 +37,15 @@ export const getReservationById = async (id) => {
   return rows[0];
 };
 
-// Verificar disponibilidad de mesa (misma hora exacta)
+// Verificar disponibilidad de mesa en un horario exacto
 export const checkTableAvailability = async (table_id, reservation_time) => {
   const [rows] = await pool.query(
     `SELECT * FROM reservations
      WHERE table_id = ? AND reservation_time = ? AND status != 'cancelled'`,
     [table_id, reservation_time]
   );
-
-  return rows.length === 0; // true → está disponible
+// Devuelve true si no hay reservas activas para esa mesa y hora
+  return rows.length === 0; 
 };
 
 // Crear reserva
@@ -87,23 +86,28 @@ export const deleteReservation = async (id) => {
   return { message: "Reservation deleted successfully" };
 };
 
-
-export const getAvailableTables = async (reservation_time) => {
-  const [rows] = await pool.query(`
+// Obtiene mesas disponibles para un horario y número de personas
+export const getAvailableTables = async (reservation_time, people) => {
+  const [rows] = await pool.query(
+    `
     SELECT t.*
     FROM restaurant_tables t
-    WHERE t.id NOT IN (
-      SELECT table_id 
-      FROM reservations 
-      WHERE reservation_time = ? 
-      AND status != 'cancelled'
-    )
-  `, [reservation_time]);
+    WHERE t.status = 'available'
+      AND t.capacity >= ?
+      AND t.id NOT IN (
+        SELECT table_id 
+        FROM reservations 
+        WHERE reservation_time = ? 
+          AND status != 'cancelled'
+      )
+  `,
+    [people, reservation_time]
+  );
 
   return rows;
 };
 
-
+// Obtiene reservas por día, ordenadas por hora
 export const getReservationsByDate = async (date) => {
   const [rows] = await pool.query(`
     SELECT r.*, t.name AS table_name, u.name AS user_name
@@ -117,7 +121,7 @@ export const getReservationsByDate = async (date) => {
   return rows;
 };
 
-
+// Se cambia el estado de la reserva a 'cancelled'
 export const cancelReservation = async (id) => {
   await pool.query(
     `UPDATE reservations SET status = 'cancelled' WHERE id = ?`,

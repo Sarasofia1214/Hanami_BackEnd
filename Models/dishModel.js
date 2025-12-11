@@ -11,15 +11,15 @@ const dishSchema = Joi.object({
   is_available: Joi.boolean().default(true),
 });
 
-
+// Devuelve { value, error } como cualquier validación de Joi
 export const validateDish = (data) => {
   return dishSchema.validate(data);
 };
 
-// Obtener todos los platos
-export const getAllDishes = async () => {
+// Obtiene todos los platos
+export const getAllDishes = async () => { // Incluye el nombre de la categoría usando un LEFT JOIN con categories
   const [rows] = await pool.query(`
-    SELECT d.*, c.name AS category_name 
+    SELECT d.*, c.name AS category_name  
     FROM dishes d
     LEFT JOIN categories c ON d.category_id = c.id
   `);
@@ -47,7 +47,7 @@ export const createDish = async (data) => {
      VALUES (?, ?, ?, ?, ?, ?)`,
     [name, description, price, image_url, category_id, is_available]
   );
-
+  // Devuelve el plato creado con el id 
   return { id: result.insertId, ...data };
 };
 

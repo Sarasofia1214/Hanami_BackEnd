@@ -20,7 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// Rutas api
 app.use("/auth", authRoutes);
 app.use("/dishes", dishRoutes);
 app.use("/categories", categoryRoutes);

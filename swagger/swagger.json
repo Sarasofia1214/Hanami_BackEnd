@@ -1,320 +1,297 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Hanami API",
-    "description": "Documentación generada automáticamente",
-    "version": "1.0.0"
+    "title": "Restaurant API",
+    "version": "1.0.0",
+    "description": "API para gestión de platos, categorías, ingredientes, usuarios, reservas y autenticación."
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
-
+      "url": "http://localhost:3000",
+      "description": "Servidor local"
     }
   ],
   "paths": {
-    "/dishes/": {
-      "get": {
-        "description": "",
+    "/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registrar nuevo usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserSignup" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuario creado" },
+          "400": { "description": "Datos inválidos" },
+          "409": { "description": "Email ya registrado" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Iniciar sesión",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Login" }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Login exitoso (token JWT o similar)"
           },
-          "500": {
-            "description": "Internal Server Error"
+          "400": { "description": "Datos inválidos" },
+          "401": { "description": "Credenciales incorrectas" }
+        }
+      }
+    },
+
+    "/dishes": {
+      "get": {
+        "tags": ["Dishes"],
+        "summary": "Listar platos",
+        "responses": {
+          "200": {
+            "description": "Listado de platos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Dish" }
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+        "tags": ["Dishes"],
+        "summary": "Crear plato",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DishCreate" }
+            }
           }
+        },
+        "responses": {
+          "201": { "description": "Plato creado" },
+          "400": { "description": "Datos inválidos" }
         }
       }
     },
     "/dishes/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Dishes"],
+        "summary": "Obtener plato por ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Plato encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Dish" }
+              }
+            }
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "404": { "description": "Plato no encontrado" }
         }
       },
       "put": {
-        "description": "",
+        "tags": ["Dishes"],
+        "summary": "Actualizar plato",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "integer" }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DishCreate" }
+            }
           }
+        },
+        "responses": {
+          "200": { "description": "Plato actualizado" },
+          "404": { "description": "Plato no encontrado" }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Dishes"],
+        "summary": "Eliminar plato",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Plato eliminado" },
+          "404": { "description": "Plato no encontrado" }
         }
       }
     },
-    "/categories/": {
+
+    "/categories": {
       "get": {
-        "description": "",
+        "tags": ["Categories"],
+        "summary": "Listar categorías",
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
+            "description": "Listado de categorías"
           }
         }
       },
       "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+        "tags": ["Categories"],
+        "summary": "Crear categoría",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Category" }
+            }
           }
+        },
+        "responses": {
+          "201": { "description": "Categoría creada" }
         }
       }
     },
     "/categories/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
       "put": {
-        "description": "",
+        "tags": ["Categories"],
+        "summary": "Actualizar categoría",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "integer" }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Category" }
+            }
           }
+        },
+        "responses": {
+          "200": { "description": "Categoría actualizada" },
+          "404": { "description": "Categoría no encontrada" }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Categories"],
+        "summary": "Eliminar categoría",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Categoría eliminada" },
+          "404": { "description": "Categoría no encontrada" }
         }
       }
     },
-    "/ingredients/": {
+
+    "/ingredients": {
       "get": {
-        "description": "",
+        "tags": ["Ingredients"],
+        "summary": "Listar ingredientes",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Listado de ingredientes" }
         }
       },
       "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
+        "tags": ["Ingredients"],
+        "summary": "Crear ingrediente",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Ingredient" }
+            }
           }
+        },
+        "responses": {
+          "201": { "description": "Ingrediente creado" }
         }
       }
     },
     "/ingredients/{id}": {
-      "get": {
-        "description": "",
+      "put": {
+        "tags": ["Ingredients"],
+        "summary": "Actualizar ingrediente",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Ingredient" }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": { "description": "Ingrediente actualizado" },
+          "404": { "description": "Ingrediente no encontrado" }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Ingredients"],
+        "summary": "Eliminar ingrediente",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
         "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": { "description": "Ingrediente eliminado" },
+          "404": { "description": "Ingrediente no encontrado" }
         }
       }
     },
-    "/ingredients/dish/{dish_id}": {
+
+    "/users": {
       "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/": {
-      "get": {
-        "description": "",
+        "tags": ["Users"],
+        "summary": "Listar usuarios",
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  }
+            "description": "Listado de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
                 }
               }
             }
@@ -324,281 +301,267 @@
     },
     "/users/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Users"],
+        "summary": "Obtener usuario por ID",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Usuario encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
           },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "404": { "description": "Usuario no encontrado" }
         }
       },
       "put": {
-        "description": "",
+        "tags": ["Users"],
+        "summary": "Actualizar usuario",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserUpdate" }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Usuario actualizado" },
+          "404": { "description": "Usuario no encontrado" }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Users"],
+        "summary": "Eliminar usuario",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Usuario eliminado" },
+          "404": { "description": "Usuario no encontrado" }
         }
       }
     },
-    "/orders/": {
+
+    "/reservations": {
+      "get": {
+        "tags": ["Reservations"],
+        "summary": "Listar reservas",
+        "responses": {
+          "200": { "description": "Listado de reservas" }
+        }
+      },
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "tags": ["Reservations"],
+        "summary": "Crear reserva",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "example": "any"
-                  },
-                  "status": {
-                    "example": "any"
-                  },
-                  "items": {
-                    "example": "any"
-                  }
-                }
-              }
+              "schema": { "$ref": "#/components/schemas/ReservationCreate" }
             }
           }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "201": { "description": "Reserva creada" },
+          "400": { "description": "Datos inválidos o mesa no disponible" }
         }
       }
     },
-    "/orders/{id}": {
+    "/reservations/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Reservations"],
+        "summary": "Obtener reserva por ID",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "200": { "description": "Reserva encontrada" },
+          "404": { "description": "Reserva no encontrada" }
+        }
+      },
+      "put": {
+        "tags": ["Reservations"],
+        "summary": "Actualizar reserva",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReservationUpdate" }
+            }
           }
+        },
+        "responses": {
+          "200": { "description": "Reserva actualizada" },
+          "404": { "description": "Reserva no encontrada" }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Reservations"],
+        "summary": "Eliminar reserva",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "200": { "description": "Reserva eliminada" },
+          "404": { "description": "Reserva no encontrada" }
         }
       }
     },
-    "/orders/{id}/status": {
-      "put": {
-        "description": "",
+    "/reservations/{id}/cancel": {
+      "patch": {
+        "tags": ["Reservations"],
+        "summary": "Cancelar reserva",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Reserva cancelada" },
+          "404": { "description": "Reserva no encontrada" }
+        }
+      }
+    },
+    "/reservations/availability": {
+      "get": {
+        "tags": ["Reservations"],
+        "summary": "Consultar mesas disponibles",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "datetime",
+            "in": "query",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string", "format": "date-time" }
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "name": "people",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "200": { "description": "Listado de mesas disponibles" }
+        }
+      }
+    },
+    "/reservations/by-date": {
+      "get": {
+        "tags": ["Reservations"],
+        "summary": "Listar reservas por fecha",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
+        ],
+        "responses": {
+          "200": { "description": "Listado de reservas del día" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "UserSignup": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "role": { "type": "string", "enum": ["customer", "admin"] }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string" }
+        }
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["customer", "admin"] }
+        }
+      },
+      "Dish": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "number", "format": "float" },
+          "category_id": { "type": "integer" }
+        }
+      },
+      "DishCreate": {
+        "type": "object",
+        "required": ["name", "price"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "number", "format": "float" },
+          "category_id": { "type": "integer" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+      "Ingredient": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+      "ReservationCreate": {
+        "type": "object",
+        "required": ["reservation_time", "number_of_people"],
+        "properties": {
+          "table_id": { "type": "integer", "nullable": true },
+          "user_id": { "type": "integer", "nullable": true },
+          "reservation_time": { "type": "string", "format": "date-time" },
+          "number_of_people": { "type": "integer", "minimum": 1 },
+          "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] }
+        }
+      },
+      "ReservationUpdate": {
+        "type": "object",
+        "properties": {
+          "table_id": { "type": "integer", "nullable": true },
+          "user_id": { "type": "integer", "nullable": true },
+          "reservation_time": { "type": "string", "format": "date-time" },
+          "number_of_people": { "type": "integer", "minimum": 1 },
+          "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] }
         }
       }
     }

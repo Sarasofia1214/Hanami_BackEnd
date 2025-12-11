@@ -7,6 +7,7 @@ import {
   removeDish,
 } from "../Controllers/dishController.js";
 
+// crea un router para las rutas de platos
 const router = Router();
 
 router.get("/", getDishes);

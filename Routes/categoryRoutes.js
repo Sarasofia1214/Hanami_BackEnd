@@ -7,6 +7,7 @@ import {
   removeCategory,
 } from "../Controllers/categoryController.js";
 
+// Crea un router específico para la entidad category
 const router = Router();
 
 router.get("/", getCategories);

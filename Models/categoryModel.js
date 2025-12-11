@@ -17,6 +17,7 @@ export const getAllCategories = async () => {
   return rows;
 };
 
+ // Si no existe, devuelve undefined (rows[0] será undefined).
 export const getCategoryById = async (id) => {
   const [rows] = await pool.query("SELECT * FROM categories WHERE id = ?", [id]);
   return rows[0];
@@ -24,7 +25,7 @@ export const getCategoryById = async (id) => {
 
 export const createCategory = async (data) => {
   const { name, description } = data;
-
+// insert con parámetros preparados para evitar SQL injection
   const [result] = await pool.query(
     "INSERT INTO categories (name, description) VALUES (?, ?)",
     [name, description]
@@ -33,6 +34,7 @@ export const createCategory = async (data) => {
   return { id: result.insertId, name, description };
 };
 
+// actualiza una categoría existente por id
 export const updateCategory = async (id, data) => {
   const { name, description } = data;
 
@@ -44,6 +46,8 @@ export const updateCategory = async (id, data) => {
   return { id, name, description };
 };
 
+
+// Elimina una categoría por id
 export const deleteCategory = async (id) => {
   await pool.query("DELETE FROM categories WHERE id = ?", [id]);
   return { message: "Category deleted successfully" };

@@ -17,7 +17,7 @@ export const listUsers = async (req, res) => {
   }
 };
 
-// Obtener usuario por ID
+// Obtiene usuario por id
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -29,7 +29,7 @@ export const getUser = async (req, res) => {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-// Actualizar usuario
+// Actualiza usuario
 export const editUser = async (req, res) => {
   try {
     const { id } = req.params;

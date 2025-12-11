@@ -1,9 +1,6 @@
 import pool from "../Config/db.js";
 import Joi from "joi";
 
-// ==============================
-// Joi Schema
-// ==============================
 const ingredientSchema = Joi.object({
   name: Joi.string().min(2).max(150).required(),
   quantity: Joi.string().max(100).required(),
@@ -28,6 +25,8 @@ export const getIngredientById = async (id) => {
   return rows[0];
 };
 
+  // Usa una tabla intermedia dish_ingredients para soportar relación N‑M
+  //  y devuelve nombres de ingredientes para ese plato
 export const getIngredientsByDishId = async (dish_id) => {
   const [rows] = await pool.query(
     `SELECT DISTINCT i.name
@@ -62,7 +61,6 @@ export const createIngredient = async (data) => {
 // Actualizar
 export const updateIngredient = async (id, data) => {
   const { name, quantity, unit, dish_id } = data;
-
   await pool.query(
     `UPDATE ingredients 
      SET name = ?, quantity = ?, unit = ?, dish_id = ? 
